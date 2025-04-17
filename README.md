@@ -1,22 +1,30 @@
-# Clustering by.U
+# 📊 User Clustering - by.U
 
-This project implements a K-Means clustering algorithm to categorize users based on their mobile usage behavior for the "by.U" service. The dataset simulates information such as top-up frequency, total data usage, daily data consumption, and the duration of active months for each user. The goal is to identify patterns within the user data, helping to segment users into distinct clusters.
+This project is a simulation of user segmentation for by.U based on their mobile data usage behavior using **K-Means Clustering**. The goal? Identify different types of users—those who are data-hungry, minimal users, and loyal but idle ones. Great for behavior analysis and data-driven decision-making.
 
-## Key Features
-- **Data Preprocessing**: StandardScaler for feature scaling.
-- **Elbow Method**: Used to determine the optimal number of clusters.
-- **K-Means Clustering**: Applied to segment users into meaningful clusters.
-- **Visualization**: Visualizing the clustering results using Matplotlib and Seaborn.
+## 🧠 Features
+- Data preprocessing with `StandardScaler`
+- Elbow Method to determine the optimal number of clusters
+- K-Means Clustering implementation
+- Visualized clustering results using Matplotlib & Seaborn
 
-## Requirements
-To run this project, you need to install the following Python libraries:
+## 🐍 Technologies
+- Python
+- pandas
+- scikit-learn
+- matplotlib
+- seaborn
 
-- `pandas`
-- `scikit-learn`
-- `matplotlib`
-- `seaborn`
+## 📷 Visualization
 
-You can install these libraries using pip:
+Cluster visualization based on `Total_Data_GB` vs `Daily_Usage_GB`:
 
-```bash
-pip install pandas scikit-learn matplotlib seaborn
+![Clustering Result](images/elbow.png)
+![Clustering Result](images/Visualisation%20Vlustering.png)
+
+
+## 🛠️ How to Use
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Farelithium/Clustering-by.U.git
