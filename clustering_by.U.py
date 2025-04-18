@@ -1,63 +1,49 @@
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
-import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
 
-# -------------------------------
-# 1. Buat Data Simulasi
-# -------------------------------
+# Data baru
 data = {
-    'User_ID': ['U001', 'U002', 'U003', 'U004', 'U005', 'U006', 'U007', 'U008', 'U009', 'U010'],
-    'Frekuensi_Topup': [5, 1, 3, 4, 2, 5, 2, 1, 3, 4],
-    'Total_Data_GB': [20, 5, 30, 25, 10, 22, 12, 6, 18, 28],
-    'Penggunaan_per_Hari_GB': [0.7, 0.2, 1.2, 1.0, 0.3, 0.8, 0.4, 0.1, 0.6, 1.1],
-    'Durasi_Aktif_bulan': [12, 3, 9, 10, 5, 14, 6, 2, 8, 11]
+    'User_ID': ['U01', 'U02', 'U03', 'U04', 'U05', 'U06', 'U07', 'U08', 'U09', 'U10', 'U11', 'U12'],
+    'Frekuensi_Topup': [1, 2, 1, 2, 3, 4, 3, 4, 5, 5, 4, 5],
+    'Total_Data_GB': [5, 8, 7, 10, 18, 23, 18, 22, 35, 40, 38, 42],
+    'Pengguna_per_Hari_GB': [1.5, 1.2, 0.7, 1.7, 2.5, 3.8, 3.3, 2.8, 5, 5.5, 6, 6.2]
 }
-
 df = pd.DataFrame(data)
-df.set_index('User_ID', inplace=True)
 
-# -------------------------------
-# 2. Preprocessing
-# -------------------------------
+# Normalisasi
 scaler = StandardScaler()
-scaled_data = scaler.fit_transform(df)
+X = scaler.fit_transform(df[['Frekuensi_Topup', 'Total_Data_GB', 'Pengguna_per_Hari_GB']])
 
-# -------------------------------
-# 3. Elbow Method (untuk cari jumlah cluster optimal)
-# -------------------------------
-inertia = []
-for k in range(1, 10):
-    model = KMeans(n_clusters=k, random_state=42)
-    model.fit(scaled_data)
-    inertia.append(model.inertia_)
+# KMeans clustering
+kmeans = KMeans(n_clusters=3, random_state=0)
+df['Cluster'] = kmeans.fit_predict(X)
 
-plt.plot(range(1, 10), inertia, marker='o')
-plt.title('Elbow Method - Cari Jumlah Cluster Optimal')
-plt.xlabel('Jumlah Cluster (k)')
-plt.ylabel('Inertia')
-plt.grid()
+# Ambil centroid dan transform balik ke skala asli
+centroids = scaler.inverse_transform(kmeans.cluster_centers_)
+
+# Warna dan label cluster
+colors = ['gold', 'purple', 'teal']
+labels = ['Light User', 'Regular User', 'Heavy User']
+cluster_map = {i: labels[i] for i in range(3)}
+
+# Plot
+plt.figure(figsize=(10, 7))
+for cluster_id in range(3):
+    cluster_data = df[df['Cluster'] == cluster_id]
+    plt.scatter(cluster_data['Total_Data_GB'], cluster_data['Pengguna_per_Hari_GB'],
+                label=f"{labels[cluster_id]}", color=colors[cluster_id], s=100)
+    for i, row in cluster_data.iterrows():
+        plt.text(row['Total_Data_GB']+0.3, row['Pengguna_per_Hari_GB']+0.1, row['User_ID'])
+
+# Plot centroids
+plt.scatter(centroids[:, 1], centroids[:, 2], marker='X', s=200, c='black', label='Centroid')
+
+plt.xlabel('Total Data (GB)')
+plt.ylabel('Pengguna per Hari (GB)')
+plt.title('K-Means Clustering Pengguna')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
 plt.show()
-
-# -------------------------------
-# 4. Clustering dengan K-Means
-# -------------------------------
-k = 3  # Misal hasil elbow nunjuk 3
-kmeans = KMeans(n_clusters=k, random_state=42)
-df['Cluster'] = kmeans.fit_predict(scaled_data)
-
-# -------------------------------
-# 5. Visualisasi Cluster
-# -------------------------------
-sns.scatterplot(x='Total_Data_GB', y='Penggunaan_per_Hari_GB', hue='Cluster', data=df, palette='viridis', s=100)
-plt.title('Visualisasi Clustering Pengguna by.U')
-plt.xlabel('Total Data Dibeli (GB)')
-plt.ylabel('Penggunaan per Hari (GB)')
-plt.grid()
-plt.show()
-
-# -------------------------------
-# 6. Lihat Hasil
-# -------------------------------
-print(df.sort_values('Cluster'))
