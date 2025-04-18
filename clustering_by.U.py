@@ -1,49 +1,46 @@
-import matplotlib.pyplot as plt
+import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Data baru
+# Data pengguna
 data = {
     'User_ID': ['U01', 'U02', 'U03', 'U04', 'U05', 'U06', 'U07', 'U08', 'U09', 'U10', 'U11', 'U12'],
     'Frekuensi_Topup': [1, 2, 1, 2, 3, 4, 3, 4, 5, 5, 4, 5],
     'Total_Data_GB': [5, 8, 7, 10, 18, 23, 18, 22, 35, 40, 38, 42],
-    'Pengguna_per_Hari_GB': [1.5, 1.2, 0.7, 1.7, 2.5, 3.8, 3.3, 2.8, 5, 5.5, 6, 6.2]
+    'Pengguna_per_Hari_GB': [1.5, 1.2, 0.7, 1.7, 2.5, 3.8, 3.3, 2.8, 5.0, 5.5, 6.0, 6.2]
 }
+
+# Buat DataFrame
 df = pd.DataFrame(data)
 
-# Normalisasi
+# Fitur yang digunakan untuk clustering
+X = df[['Frekuensi_Topup', 'Total_Data_GB', 'Pengguna_per_Hari_GB']]
+
+# Normalisasi data
 scaler = StandardScaler()
-X = scaler.fit_transform(df[['Frekuensi_Topup', 'Total_Data_GB', 'Pengguna_per_Hari_GB']])
+X_scaled = scaler.fit_transform(X)
 
-# KMeans clustering
-kmeans = KMeans(n_clusters=3, random_state=0)
-df['Cluster'] = kmeans.fit_predict(X)
+# Clustering dengan KMeans
+kmeans = KMeans(n_clusters=3, random_state=42, n_init='auto')
+df['Cluster'] = kmeans.fit_predict(X_scaled)
 
-# Ambil centroid dan transform balik ke skala asli
-centroids = scaler.inverse_transform(kmeans.cluster_centers_)
+# Menampilkan hasil
+print(df)
 
-# Warna dan label cluster
-colors = ['gold', 'purple', 'teal']
-labels = ['Light User', 'Regular User', 'Heavy User']
-cluster_map = {i: labels[i] for i in range(3)}
-
-# Plot
-plt.figure(figsize=(10, 7))
-for cluster_id in range(3):
-    cluster_data = df[df['Cluster'] == cluster_id]
-    plt.scatter(cluster_data['Total_Data_GB'], cluster_data['Pengguna_per_Hari_GB'],
-                label=f"{labels[cluster_id]}", color=colors[cluster_id], s=100)
-    for i, row in cluster_data.iterrows():
-        plt.text(row['Total_Data_GB']+0.3, row['Pengguna_per_Hari_GB']+0.1, row['User_ID'])
-
-# Plot centroids
-plt.scatter(centroids[:, 1], centroids[:, 2], marker='X', s=200, c='black', label='Centroid')
-
+# Visualisasi klaster (2D menggunakan dua fitur utama)
+plt.figure(figsize=(8, 6))
+sns.scatterplot(
+    data=df,
+    x='Total_Data_GB',
+    y='Pengguna_per_Hari_GB',
+    hue='Cluster',
+    palette='Set2',
+    s=100
+)
+plt.title('Hasil Clustering Pengguna by.U')
 plt.xlabel('Total Data (GB)')
-plt.ylabel('Pengguna per Hari (GB)')
-plt.title('K-Means Clustering Pengguna')
-plt.legend()
+plt.ylabel('Penggunaan Harian (GB/hari)')
 plt.grid(True)
-plt.tight_layout()
 plt.show()
