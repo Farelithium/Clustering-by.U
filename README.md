@@ -27,3 +27,4 @@ Cluster visualization based on `Total_Data_GB` vs `Daily_Usage_GB`:
 
    ```bash
    git clone https://github.com/Farelithium/Clustering-by.U.git
+   python clustering_by.U.py
