@@ -19,8 +19,7 @@ This project is a simulation of user segmentation for by.U based on their mobile
 
 Cluster visualization based on `Total_Data_GB` vs `Daily_Usage_GB`:
 
-![Clustering Result](images/elbow.png)
-![Clustering Result](images/Visualisation%20Vlustering.png)
+![Clustering Result](images/K-means%20new.png)
 
 
 ## 🛠️ How to Use
